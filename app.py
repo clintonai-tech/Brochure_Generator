@@ -181,7 +181,7 @@ def stream_brochure(company_name, url, model):
     except Exception as e:
         yield f"**Error**: An unexpected error occurred while generating the brochure: {str(e)}"
 
-def generate_image_from_brochure(generate_image):
+def generate_image_from_brochure(theme):
     """
     Function to handle the image generation based on user selection.
     
@@ -193,8 +193,6 @@ def generate_image_from_brochure(generate_image):
     """
     global current_brochure
     
-    if not generate_image:
-        return "Image generation canceled.", None
     
     if not current_brochure["text"]:
         return "Please generate a brochure first.", None
@@ -202,7 +200,7 @@ def generate_image_from_brochure(generate_image):
     # Generate image using the brochure text
     try:
         b64_image = generate_brochure_image(current_brochure["text"], 
-                                          style=f"professional company brochure for {current_brochure['company_name']}")
+                                          style=f"{theme} style company brochure for {current_brochure['company_name']}")
         
         if b64_image:
             try:
@@ -232,6 +230,11 @@ with gr.Blocks() as demo:
             generate_btn = gr.Button("Generate Brochure")
         
     brochure_output = gr.Markdown(label="Brochure:")
+    with gr.Row():
+        image_theme = gr.Dropdown(
+                ["Modern Minimalist", "Corporate Realism", "Vibrant Illustrative"], 
+                label="Select brochure image theme",
+                value="Modern Minimalist")
     
     with gr.Row():
         generate_img_btn = gr.Button("Generate Image for Brochure")
@@ -248,7 +251,7 @@ with gr.Blocks() as demo:
     
     generate_img_btn.click(
         fn=generate_image_from_brochure,
-        inputs=[gr.Checkbox(value=True, visible=False)],  # Hidden checkbox always set to True
+        inputs=[image_theme],  # Hidden checkbox always set to True
         outputs=[image_status, image_output]
     )
 
