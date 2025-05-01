@@ -3,3 +3,4 @@ notebook.ipynb
 DS_Store
 __pycache__/
 venv/
+.DS_Store
